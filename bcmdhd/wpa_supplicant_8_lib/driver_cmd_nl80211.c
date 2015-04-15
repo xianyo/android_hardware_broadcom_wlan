@@ -101,34 +101,8 @@ int wpa_driver_nl80211_driver_cmd(void *priv, char *cmd, char *buf,
 			ret = os_snprintf(buf, buf_len,
 					  "Macaddr = " MACSTR "\n", MAC2STR(macaddr));
 	} else { /* Use private command */
-		os_memcpy(buf, cmd, strlen(cmd) + 1);
-		memset(&ifr, 0, sizeof(ifr));
-		memset(&priv_cmd, 0, sizeof(priv_cmd));
-		os_strlcpy(ifr.ifr_name, bss->ifname, IFNAMSIZ);
-
-#ifdef BCMDHD_64_BIT_IPC
-		priv_cmd.bufaddr = (u64)(uintptr_t)buf;
-#else
-		priv_cmd.bufaddr = buf;
-#endif
-		priv_cmd.used_len = buf_len;
-		priv_cmd.total_len = buf_len;
-		ifr.ifr_data = &priv_cmd;
-
-		if ((ret = ioctl(drv->global->ioctl_sock, SIOCDEVPRIVATE + 1, &ifr)) < 0) {
-			wpa_printf(MSG_ERROR, "%s: failed to issue private command: %s", __func__, cmd);
-			wpa_driver_send_hang_msg(drv);
-		} else {
-			drv_errors = 0;
-			ret = 0;
-			if ((os_strcasecmp(cmd, "LINKSPEED") == 0) ||
-			    (os_strcasecmp(cmd, "RSSI") == 0) ||
-			    (os_strcasecmp(cmd, "GETBAND") == 0) ||
-			    (os_strncasecmp(cmd, "WLS_BATCHING", 12) == 0))
-				ret = strlen(buf);
-			wpa_driver_notify_country_change(drv->ctx, cmd);
-			wpa_printf(MSG_DEBUG, "%s %s len = %d, %zu", __func__, buf, ret, strlen(buf));
-		}
+		wpa_printf(MSG_DEBUG, "%s: ignoring private command %s\n",
+				   __func__, cmd);
 	}
 	return ret;
 }
