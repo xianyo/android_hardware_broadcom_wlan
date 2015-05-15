@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+ifeq ($(BCM_WIFI_ONLY), true)
 LOCAL_PATH := $(call my-dir)
 
 ########################
@@ -37,3 +38,4 @@ else
 endif
 endif
 #######################
+endif
